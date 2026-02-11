@@ -11,28 +11,23 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins for development
+    allow_origins=["*"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Make these attributes of the app instance
 app.idempotency_store = {}
-app.rate_limit_store = {} # Renamed for clarity
+app.rate_limit_store = {}
 
-# Middleware for rate limiting and payload size
 @app.middleware("http")
 async def add_process_middleware(request: Request, call_next):
-    # Basic Rate Limiting (e.g., 5 requests per minute per IP)
-    # In a real application, use a more robust solution like Redis
     client_ip = request.client.host
     current_time = time.time()
     
     if client_ip not in app.rate_limit_store:
         app.rate_limit_store[client_ip] = []
     
-    # Remove requests older than 1 minute
     app.rate_limit_store[client_ip] = [
         t for t in app.rate_limit_store[client_ip] if current_time - t < 60
     ]
@@ -42,9 +37,6 @@ async def add_process_middleware(request: Request, call_next):
     
     app.rate_limit_store[client_ip].append(current_time)
 
-    # Payload Size Limit (e.g., 100KB)
-    # For simplicity, we'll check content length for text.
-    # For actual file uploads, you'd check request.stream()
     if request.headers.get("content-length"):
         content_length = int(request.headers["content-length"])
         if content_length > 1024 * 100:  # 100 KB
