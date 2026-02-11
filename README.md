@@ -16,8 +16,8 @@ A full-stack application for parsing invoice text using Regex, featuring a FastA
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/regex-assessment.git
-cd regex-assessment
+git clone https://github.com/omejeemmanuel1/Regex-strategy.git
+cd Regex-strategy
 ```
 
 ### 2. Start the Backend
